@@ -9,15 +9,17 @@ plugins {
 repositories {
     mavenCentral()
     maven("https://repo.tabooproject.org/repository/releases")
+    maven("https://repo.papermc.io/repository/maven-public/")
 }
 
 val taboolibVersion: String by project
 dependencies {
     compileOnly("ink.ptms:nms-all:1.0.0")
-    compileOnly("ink.ptms.core:v11200:11200")
-    compileOnly("ink.ptms.core:v11701:11701-minimize:mapped")
+    compileOnly("io.papermc.paper:paper-api:1.20.2-R0.1-SNAPSHOT")
     compileOnly(kotlin("stdlib"))
     compileOnly(fileTree("libs"))
+
+    compileOnly("com.mojang:authlib:1.5.25")
 
     compileOnly("io.izzel.taboolib:common:${taboolibVersion}")
     compileOnly("io.izzel.taboolib:common-legacy-api:${taboolibVersion}")
@@ -33,6 +35,7 @@ dependencies {
     compileOnly("io.izzel.taboolib:module-ui:${taboolibVersion}")
     compileOnly("io.izzel.taboolib:module-chat:${taboolibVersion}")
     compileOnly("io.izzel.taboolib:module-lang:${taboolibVersion}")
+    compileOnly("io.izzel.taboolib:module-nms:${taboolibVersion}")
     compileOnly("io.izzel.taboolib:platform-bukkit:${taboolibVersion}")
 }
 

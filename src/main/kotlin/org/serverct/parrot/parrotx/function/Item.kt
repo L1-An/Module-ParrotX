@@ -2,23 +2,26 @@
 
 package org.serverct.parrot.parrotx.function
 
-import com.mojang.authlib.GameProfile
-import com.mojang.authlib.properties.Property
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
-import org.bukkit.inventory.meta.SkullMeta
-import taboolib.common.platform.function.pluginId
 import taboolib.common.util.VariableReader
-import taboolib.library.reflex.Reflex.Companion.setProperty
 import taboolib.module.chat.colored
+import taboolib.platform.util.isAir
 import taboolib.platform.util.modifyMeta
-import java.util.*
+
+/**
+ * Aiyatsbus
+ * com.mcstarrysky.aiyatsbus.module.ui.internal.function.Item
+ *
+ * @author mical
+ * @since 2024/2/18 12:42
+ */
 
 fun ItemStack.variables(reader: VariableReader = VariableReaders.BRACES, func: VariableFunction): ItemStack {
     return modifyMeta<ItemMeta> {
-        displayName = displayName?.let {
+        setDisplayName(displayName.let {
             reader.replaceNested(it) { func.transfer(this)?.firstOrNull() ?: this }.colored()
-        }
+        })
         lore = lore?.variables(reader, func)?.colored()
     }
 }
@@ -49,20 +52,7 @@ fun ItemStack.areas(builder: AreaFilterBuilder.() -> Unit): ItemStack {
     return areas(AreaFilterBuilder(builder))
 }
 
-@Suppress("HttpUrlsUsage")
-var headUrl: String = "http://textures.minecraft.net/texture/"
-
-infix fun ItemStack.textured(input: String): ItemStack {
-    fun encodeTexture(input: String): String {
-        return with(Base64.getEncoder()) {
-            encodeToString("{\"textures\":{\"SKIN\":{\"url\":\"$headUrl$input\"}}}".toByteArray())
-        }
-    }
-
-    return modifyMeta<SkullMeta> {
-        val profile = GameProfile(UUID.randomUUID(), "null")
-        val texture = if (input.length in 60..100) encodeTexture(input) else input
-        profile.properties.put("textures", Property("textures", texture, "${pluginId}_TexturedSkull"))
-        setProperty("profile", profile)
-    }
-}
+/**
+ * 判断物品是否为 null 或是空气方块
+ */
+val ItemStack?.isNull get() = this?.isAir ?: true
