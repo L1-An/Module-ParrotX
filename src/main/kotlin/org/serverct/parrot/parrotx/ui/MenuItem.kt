@@ -71,7 +71,7 @@ class MenuItem(
                             return@let item
                         }
                         item.modifyMeta<ItemMeta> {
-                            displayName = displayName?.colored()
+                            setDisplayName(displayName.colored())
                             lore = lore?.map { it.colored() }
                         }
                     }
