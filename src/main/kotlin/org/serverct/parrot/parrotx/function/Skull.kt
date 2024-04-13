@@ -1,3 +1,4 @@
+@file:Suppress("Deprecation")
 package org.serverct.parrot.parrotx.function
 
 import com.mojang.authlib.GameProfile
@@ -31,7 +32,7 @@ infix fun ItemStack.textured(headBase64: String): ItemStack {
         } else {
             val profile = GameProfile(UUID.randomUUID(), "TabooLib")
             val texture = if (headBase64.length in 60..100) encodeTexture(headBase64) else headBase64
-            profile.properties.put("textures", Property("textures", texture, "Aiyatsbus_TexturedSkull"))
+            profile.properties.put("textures", Property("textures", texture, "ParrotX_TexturedSkull"))
 
             setProperty("profile", profile)
         }
