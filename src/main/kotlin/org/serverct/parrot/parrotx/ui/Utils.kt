@@ -8,6 +8,8 @@ import org.serverct.parrot.parrotx.function.isNull
 import org.serverct.parrot.parrotx.function.textured
 import org.serverct.parrot.parrotx.ui.config.advance.ShapeConfiguration
 import org.serverct.parrot.parrotx.ui.config.advance.TemplateConfiguration
+import org.serverct.parrot.parrotx.util.calcToInt
+import org.serverct.parrot.parrotx.util.get
 import taboolib.module.ui.type.Chest
 import taboolib.module.ui.type.PageableChest
 import taboolib.platform.util.modifyMeta
@@ -23,12 +25,18 @@ fun Chest.setSlots(
     shape: ShapeConfiguration,
     templates: TemplateConfiguration,
     key: String,
+    elements: List<Any?> = listOf(),
     vararg args: Pair<String, Any>
 ) {
     var tot = 0
     shape[key].forEach { slot ->
         val map = args.toMap().mapValues {
-            it.value
+            val parts = it.value.toString().split("=")
+            when (parts[0]) {
+                "expression" -> parts[1].calcToInt("tot" to "$tot")
+                "element" -> elements[parts[1, 0]?.calcToInt("tot" to "$tot") ?: tot, 0]
+                else -> it.value
+            }
         }
         set(slot, templates(key, slot, 0, false, "Fallback") { this += map })
         onClick(slot) { templates[it.rawSlot]?.handle(this, it) { this += map } }
@@ -50,7 +58,7 @@ fun Chest.load(
     }
 
     if (shape["Back", true].isNotEmpty())
-        setSlots(shape, templates, "Back", "player" to player)
+        setSlots(shape, templates, "Back", listOf(), "player" to player)
 
     onClick { event ->
         event.isCancelled = true
