@@ -9,10 +9,10 @@ import taboolib.platform.util.asLangTextOrNull
 /**
  * 给CommandSender发送语言信息
  * @param node 语言文件的键
- * @param type 语言类型(Info, Error, Done)
  * @param args 语言文件的参数
+ * @param type 语言类型(Info, Error, Done), 默认为 null (不播放音效)
  */
-fun CommandSender.sendLang(node: String, type: LanguageType? = null, vararg args: Any) {
+fun CommandSender.sendLang(node: String, vararg args: Any, type: LanguageType? = null) {
     Language.sendLang(this, node, *args, asLangTextOrNull("prefix") to "prefix")
     // 播放信息音效
     if (this is Player) playSound(this, type)
@@ -50,6 +50,6 @@ private fun playSound(player: Player, type: LanguageType?) {
         LanguageType.Info -> player.playSound(player.location, Sound.UI_BUTTON_CLICK, 1f, (1..2).random().toFloat())
         LanguageType.Error -> player.playSound(player.location, Sound.ENTITY_VILLAGER_NO, 1f, (1..2).random().toFloat())
         LanguageType.Done -> player.playSound(player.location, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, (1..2).random().toFloat())
-        else -> {}
+        null -> {}
     }
 }

@@ -58,6 +58,12 @@ class ShapeConfiguration(val holder: MenuConfiguration) {
         return indexes
     }
 
+    /**
+     * 获取关键词映射的槽位
+     * @param keyword 关键词
+     * @param empty 是否允许空映射
+     * @param multi 是否允许多个映射
+     */
     operator fun get(keyword: String, empty: Boolean = false, multi: Boolean = true): Set<Int> {
         val indexes = LinkedHashSet<Int>()
         val ref = holder.keywords[keyword]
