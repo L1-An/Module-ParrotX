@@ -7,6 +7,18 @@ import org.serverct.parrot.parrotx.search.api.corrector.Corrector
 import taboolib.common.platform.function.submit
 import java.util.concurrent.CompletableFuture
 
+/**
+ * 用于修正位置的表面修正器
+ * 例如传入的位置是在空中/地下，那么会修正到对应表面上
+ * 使用方法：
+ * ```kotlin
+ * fun safeTeleport(player: Player, location: Location) {
+ *    SurfaceCorrector.correct(location).thenAccept { // 修正位置
+ *        player.teleport(it)
+ *    }
+ * }
+ */
+@Suppress("unused")
 object SurfaceCorrector : Corrector<Location> {
 
     private val heights = 0 until 255

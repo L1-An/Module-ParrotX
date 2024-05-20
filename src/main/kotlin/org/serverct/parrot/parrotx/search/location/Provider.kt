@@ -7,8 +7,10 @@ import taboolib.common.platform.function.submit
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
-
-@Suppress("MemberVisibilityCanBePrivate", "CanBeParameter")
+/**
+ * 用于生成一个方形扩散的位置提供器
+ */
+@Suppress("MemberVisibilityCanBePrivate", "CanBeParameter", "unused")
 class SquareDiffusion(val center: Location) : Provider<Location> {
 
     constructor(entity: Entity) : this(entity.location)

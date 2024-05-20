@@ -9,10 +9,10 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.serverct.parrot.parrotx.function.format
+import org.serverct.parrot.parrotx.lang.sendLang
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.module.chat.colored
-import taboolib.platform.util.sendLang
 import java.util.*
 
 fun Player.select(name: String, message: String? = null, vararg args: Any, builder: Selection.() -> Unit) {

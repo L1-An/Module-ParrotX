@@ -4,11 +4,11 @@ package org.serverct.parrot.parrotx.feature
 
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerQuitEvent
+import org.serverct.parrot.parrotx.lang.sendLang
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submit
 import taboolib.module.chat.colored
-import taboolib.platform.util.sendLang
 import java.util.*
 import java.util.concurrent.TimeUnit
 

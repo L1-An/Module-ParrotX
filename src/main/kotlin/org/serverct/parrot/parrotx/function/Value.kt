@@ -8,7 +8,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 fun usernameOrNull(uniqueId: UUID): String? {
-    return Bukkit.getOfflinePlayer(uniqueId)?.name
+    return Bukkit.getOfflinePlayer(uniqueId).name
 }
 
 fun username(uniqueId: UUID): String {
@@ -23,6 +23,12 @@ fun user(uniqueId: UUID, fallbackName: String? = null): String {
     return "${usernameOrNull(uniqueId) ?: fallbackName ?: "null"}($uniqueId)"
 }
 
+/**
+ * 将秒数转换为可读的时间格式
+ * @param seconds 秒数
+ * @param map<TimeUnit, String> 单位映射
+ * @return 可读的时间格式
+ */
 fun duration(
     seconds: Long,
     units: Map<TimeUnit, String> = mapOf(

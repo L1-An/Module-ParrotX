@@ -7,8 +7,8 @@ import org.bukkit.Material
 import org.bukkit.OfflinePlayer
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.Player
+import org.serverct.parrot.parrotx.lang.sendLang
 import taboolib.platform.util.sendInfoMessage
-import taboolib.platform.util.sendLang
 
 
 fun OfflinePlayer.notice(node: String, vararg args: Any): Boolean {
