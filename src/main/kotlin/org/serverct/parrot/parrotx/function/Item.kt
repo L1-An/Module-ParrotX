@@ -1,4 +1,4 @@
-@file:Suppress("unused")
+@file:Suppress("unused", "deprecation")
 
 package org.serverct.parrot.parrotx.function
 
@@ -56,3 +56,10 @@ fun ItemStack.areas(builder: AreaFilterBuilder.() -> Unit): ItemStack {
  * 判断物品是否为 null 或是空气方块
  */
 val ItemStack?.isNull get() = this?.isAir ?: true
+
+/** 获取/修改物品显示名称 */
+var ItemStack.name
+    get() = itemMeta?.displayName
+    set(value) {
+        modifyMeta<ItemMeta> { setDisplayName(value) }
+    }
