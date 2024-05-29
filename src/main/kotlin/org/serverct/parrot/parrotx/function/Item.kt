@@ -1,59 +1,66 @@
-@file:Suppress("unused")
+@file:Suppress("unused", "deprecation")
 
 package org.serverct.parrot.parrotx.function
 
-import com.mojang.authlib.GameProfile
-import com.mojang.authlib.properties.Property
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
-import org.bukkit.inventory.meta.SkullMeta
-import taboolib.common.platform.function.pluginId
 import taboolib.common.util.VariableReader
-import taboolib.library.reflex.Reflex.Companion.setProperty
 import taboolib.module.chat.colored
+import taboolib.platform.util.isAir
 import taboolib.platform.util.modifyMeta
-import java.util.*
 
-fun ItemStack.variables(reader: VariableReader = VariableReaders.BRACES, transfer: (String) -> Collection<String>?): ItemStack {
+/**
+ * Aiyatsbus
+ * com.mcstarrysky.aiyatsbus.module.ui.internal.function.Item
+ *
+ * @author mical
+ * @since 2024/2/18 12:42
+ */
+
+fun ItemStack.variables(reader: VariableReader = VariableReaders.BRACES, func: VariableFunction): ItemStack {
     return modifyMeta<ItemMeta> {
-        displayName = displayName?.let {
-            reader.replaceNested(it) { transfer(this)?.firstOrNull() ?: this }.colored()
-        }
-        lore = lore?.variables(reader, transfer)?.colored()
+        setDisplayName(displayName.let {
+            reader.replaceNested(it) { func.transfer(this)?.firstOrNull() ?: this }.colored()
+        })
+        lore = lore?.variables(reader, func)?.colored()
     }
+}
+
+fun ItemStack.transform(reader: VariableReader = VariableReaders.BRACES, builder: VariableTransformerBuilder.() -> Unit): ItemStack {
+    return variables(reader, VariableTransformerBuilder(builder))
 }
 
 fun ItemStack.variable(key: String, value: Collection<String>, reader: VariableReader = VariableReaders.BRACES): ItemStack {
     return variables(reader) { if (it == key) value else null }
 }
 
-fun ItemStack.singletons(reader: VariableReader = VariableReaders.BRACES, transfer: (String) -> String?): ItemStack {
-    return variables(reader) { transfer(it)?.let(::listOf) }
+fun ItemStack.singletons(reader: VariableReader = VariableReaders.BRACES, func: SingleVariableFunction): ItemStack {
+    return variables(reader, func)
 }
 
 fun ItemStack.singleton(key: String, value: String, reader: VariableReader = VariableReaders.BRACES): ItemStack {
     return singletons(reader) { if (it == key) value else null }
 }
 
-infix fun ItemStack.select(selector: (String) -> Boolean): ItemStack {
+fun ItemStack.areas(filter: AreaFilter): ItemStack {
     return modifyMeta<ItemMeta> {
-        lore = lore?.select(selector)?.colored()
+        lore = lore?.areas(filter)?.colored()
     }
 }
 
-infix fun ItemStack.textured(input: String): ItemStack {
-    @Suppress("HttpUrlsUsage")
-    fun encodeTexture(input: String): String {
-        return with(Base64.getEncoder()) {
-            encodeToString("{\"textures\":{\"SKIN\":{\"url\":\"http://textures.minecraft.net/texture/$input\"}}}".toByteArray())
-        }
-    }
-
-    return modifyMeta<SkullMeta> {
-        val profile = GameProfile(UUID.randomUUID(), "null")
-        val texture = if (input.length in 60..100) encodeTexture(input) else input
-        profile.properties.put("textures", Property("textures", texture, "${pluginId}_TexturedSkull"))
-
-        setProperty("profile", profile)
-    }
+fun ItemStack.areas(builder: AreaFilterBuilder.() -> Unit): ItemStack {
+    return areas(AreaFilterBuilder(builder))
 }
+
+
+/**
+ * 判断物品是否为 null 或是空气方块
+ */
+val ItemStack?.isNull get() = this?.isAir ?: true
+
+/** 获取/修改物品显示名称 */
+var ItemStack.name
+    get() = itemMeta?.displayName
+    set(value) {
+        modifyMeta<ItemMeta> { setDisplayName(value) }
+    }

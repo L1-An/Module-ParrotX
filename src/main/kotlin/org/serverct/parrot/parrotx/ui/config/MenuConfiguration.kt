@@ -8,13 +8,14 @@ import org.serverct.parrot.parrotx.ui.config.advance.TemplateConfiguration
 import taboolib.library.configuration.ConfigurationSection
 import taboolib.module.configuration.Configuration
 import taboolib.module.ui.type.Linked
+import taboolib.module.ui.type.PageableChest
 
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 class MenuConfiguration(internal val source: Configuration) {
 
-    val isDebug: Boolean by lazy { source.oneOf(*MenuPart.DEBUG.paths, transfer = ConfigurationSection::getBoolean) ?: false }
+    val isDebug: Boolean by lazy { source.oneOf(*MenuSection.DEBUG.paths, getter = ConfigurationSection::getBoolean) ?: false }
 
-    val title: String? by lazy { source.oneOf(*MenuPart.TITLE.paths, transfer = ConfigurationSection::getString) }
+    val title: String? by lazy { source.oneOf(*MenuSection.TITLE.paths, getter = ConfigurationSection::getString) }
     val shape: ShapeConfiguration by lazy { ShapeConfiguration(this) }
     val templates: TemplateConfiguration by lazy { TemplateConfiguration(this) }
     val keywords: KeywordConfiguration by lazy { KeywordConfiguration(this) }
@@ -23,13 +24,13 @@ class MenuConfiguration(internal val source: Configuration) {
 
     fun title(vararg variables: Pair<String, () -> String>): String {
         return with(variables.toMap()) {
-            VariableReaders.BRACES.replaceNested(title ?: MenuPart.TITLE.missing()) {
+            VariableReaders.BRACES.replaceNested(title ?: MenuSection.TITLE.missing()) {
                 get(this)?.invoke() ?: ""
             }
         }
     }
 
-    fun setPreviousPage(menu: Linked<*>, keyword: String = "Previous") {
+    fun setPreviousPage(menu: PageableChest<*>, keyword: String = "Previous") {
         shape[keyword].first().let { slot ->
             menu.setPreviousPage(slot) { _, it ->
                 templates(keyword, slot, 0, !it)
@@ -37,7 +38,7 @@ class MenuConfiguration(internal val source: Configuration) {
         }
     }
 
-    fun setNextPage(menu: Linked<*>, keyword: String = "Next") {
+    fun setNextPage(menu: PageableChest<*>, keyword: String = "Next") {
         shape[keyword].first().let { slot ->
             menu.setNextPage(slot) { _, it ->
                 templates(keyword, slot, 0, !it)

@@ -1,17 +1,15 @@
-@file:Isolated
 @file:Suppress("unused", "MemberVisibilityCanBePrivate")
 
 package org.serverct.parrot.parrotx.feature
 
 import org.bukkit.entity.Player
 import org.bukkit.event.player.AsyncPlayerChatEvent
-import taboolib.common.Isolated
+import org.serverct.parrot.parrotx.lang.sendLang
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submit
 import taboolib.common.util.replaceWithOrder
 import taboolib.module.chat.colored
-import taboolib.platform.util.sendLang
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -26,7 +24,6 @@ fun Player.input(name: String, message: String? = null, vararg args: Any, builde
     Inputs.schedule(this, name, builder)
 }
 
-@Isolated
 object Inputs {
 
     private val scheduled: MutableMap<UUID, Input> = HashMap()
@@ -64,7 +61,6 @@ object Inputs {
 
 }
 
-@Isolated
 class Input(val name: String, builder: Input.() -> Unit) {
 
     var isCancelled: Boolean = false

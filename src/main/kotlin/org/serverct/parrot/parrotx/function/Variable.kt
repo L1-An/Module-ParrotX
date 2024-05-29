@@ -14,12 +14,58 @@ object VariableReaders {
     internal val AREA_END by lazy { "^#end(?: (?<area>.+))?$".toRegex() }
 }
 
-fun Collection<String>.variables(reader: VariableReader = VariableReaders.BRACES, transfer: (String) -> Collection<String>?): List<String> {
+fun interface VariableFunction {
+    fun transfer(name: String): Collection<String>?
+}
+
+fun interface SingleVariableFunction : VariableFunction {
+    fun replace(name: String): String?
+
+    override fun transfer(name: String): Collection<String>? = replace(name)?.let(::listOf)
+}
+
+@Suppress("MemberVisibilityCanBePrivate")
+class VariableTransformerBuilder(builder: VariableTransformerBuilder.() -> Unit) : VariableFunction {
+
+    private val registered: MutableMap<String, VariableFunction> = mutableMapOf()
+    private var def: VariableFunction = VariableFunction { null }
+
+    init {
+        builder()
+    }
+
+    fun default(func: VariableFunction) {
+        this.def = func
+    }
+
+    infix fun String.multiple(func: VariableFunction) {
+        registered[this] = func
+    }
+
+    infix fun String.multiple(value: Collection<String>?) = this multiple { value }
+
+    infix fun String.single(func: SingleVariableFunction) = this multiple func
+
+    infix fun String.single(value: String?) = this single { value }
+
+    infix fun Enum<*>.multiple(func: VariableFunction) = this.name.lowercase() multiple func
+
+    infix fun Enum<*>.multiple(value: Collection<String>?) = this multiple { value }
+
+    infix fun Enum<*>.single(func: SingleVariableFunction) = this multiple func
+
+    infix fun Enum<*>.single(value: String?) = this single { value }
+
+    override fun transfer(name: String): Collection<String>? = registered[name]?.transfer(name) ?: def.transfer(name)
+
+}
+
+fun Collection<String>.variables(reader: VariableReader = VariableReaders.BRACES, func: VariableFunction): List<String> {
     return flatMap { context ->
         val result = ArrayList<String>()
         val queued = HashMap<String, Queue<String>>()
         reader.replaceNested(context) scan@{
-            queued[this] = LinkedList(transfer(this) ?: return@scan this)
+            queued[this] = LinkedList(func.transfer(this) ?: return@scan this)
             this
         }
         if (queued.isEmpty()) {
@@ -39,19 +85,48 @@ fun Collection<String>.variables(reader: VariableReader = VariableReaders.BRACES
     }
 }
 
+fun Collection<String>.transform(reader: VariableReader = VariableReaders.BRACES, builder: VariableTransformerBuilder.() -> Unit): List<String> {
+    return variables(reader, VariableTransformerBuilder(builder))
+}
+
 fun Collection<String>.variable(key: String, value: Collection<String>, reader: VariableReader = VariableReaders.BRACES): List<String> {
     return variables(reader) { if (it == key) value else null }
 }
 
-fun Collection<String>.singletons(reader: VariableReader = VariableReaders.BRACES, transfer: (String) -> String?): List<String> {
-    return variables(reader) { transfer(it)?.let(::listOf) }
+fun Collection<String>.singletons(reader: VariableReader = VariableReaders.BRACES, func: SingleVariableFunction): List<String> {
+    return variables(reader, func)
 }
 
 fun Collection<String>.singleton(key: String, value: String, reader: VariableReader = VariableReaders.BRACES): List<String> {
     return singletons(reader) { if (it == key) value else null }
 }
 
-infix fun Iterable<String>.select(selector: (String) -> Boolean): List<String> {
+fun interface AreaFilter {
+    fun filter(name: String): Boolean
+}
+
+class AreaFilterBuilder(builder: AreaFilterBuilder.() -> Unit) : AreaFilter {
+
+    private val registered: MutableMap<String, AreaFilter> = mutableMapOf()
+    private var def = false
+
+    init {
+        builder()
+    }
+
+    fun default(value: Boolean) {
+        def = value
+    }
+
+    fun name(name: String, func: AreaFilter) {
+        registered[name] = func
+    }
+
+    override fun filter(name: String): Boolean = registered[name]?.filter(name) ?: def
+
+}
+
+fun Iterable<String>.areas(filter: AreaFilter): List<String> {
     val selected: MutableList<String> = ArrayList()
     val areas: Deque<String> = LinkedList()
 
@@ -77,7 +152,7 @@ infix fun Iterable<String>.select(selector: (String) -> Boolean): List<String> {
         }
 
         val area = areas.peek()
-        if (area != null && !selector(area)) {
+        if (area != null && !filter.filter(area)) {
             continue
         }
 
@@ -92,4 +167,8 @@ infix fun Iterable<String>.select(selector: (String) -> Boolean): List<String> {
         selected.add(line)
     }
     return selected
+}
+
+fun Iterable<String>.areas(builder: AreaFilterBuilder.() -> Unit): List<String> {
+    return areas(AreaFilterBuilder(builder))
 }

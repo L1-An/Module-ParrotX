@@ -4,8 +4,7 @@ import org.serverct.parrot.parrotx.function.oneOf
 import org.serverct.parrot.parrotx.ui.MenuItem
 import org.serverct.parrot.parrotx.ui.MenuKeyword
 import org.serverct.parrot.parrotx.ui.config.MenuConfiguration
-import org.serverct.parrot.parrotx.ui.config.MenuPart
-import taboolib.library.configuration.ConfigurationSection
+import org.serverct.parrot.parrotx.ui.config.MenuSection
 
 fun interface Shaper {
     fun shape(slot: Int, index: Int, item: MenuItem, keyword: MenuKeyword)
@@ -14,8 +13,9 @@ fun interface Shaper {
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 class ShapeConfiguration(val holder: MenuConfiguration) {
 
-    val raw: List<String> = holder.source.oneOf(*MenuPart.SHAPE.paths, transfer = ConfigurationSection::getStringList)
-        ?.takeIf { it.isNotEmpty() } ?: emptyList()
+    val raw: List<String> =
+        holder.source.oneOf(*MenuSection.SHAPE.paths, validate = { it.isNotEmpty() }, getter = { getStringList(it) })
+            ?: emptyList()
     val rows: Int = raw.size
     val range: IntRange by lazy { 0 until (rows * 9) }
     val lines: List<String> by lazy {
@@ -35,28 +35,47 @@ class ShapeConfiguration(val holder: MenuConfiguration) {
 
     init {
         if (rows == 0) {
-            MenuPart.SHAPE.missing()
+            MenuSection.SHAPE.missing()
         }
     }
 
-    operator fun get(slot: Int): Char = requireNotNull(flatten.elementAtOrNull(slot)) { "尝试获取越界槽位的字符: $slot" }
+    operator fun get(slot: Int): Char =
+        requireNotNull(flatten.elementAtOrNull(slot)) { "尝试获取越界槽位的字符: $slot" }
 
+    operator fun get(ref: Char, empty: Boolean = false, multi: Boolean = true): Set<Int> {
+        val indexes = LinkedHashSet<Int>()
+        flatten.forEachIndexed { index, char ->
+            if (char == ref) {
+                indexes += index
+            }
+        }
+        if (!empty && indexes.isEmpty()) {
+            MenuSection.SHAPE incorrect "未映射字符 $ref"
+        }
+        if (!multi && indexes.size > 1) {
+            MenuSection.SHAPE incorrect "字符 $ref 映射了多个位置"
+        }
+        return indexes
+    }
+
+    /**
+     * 获取关键词映射的槽位
+     * @param keyword 关键词
+     * @param empty 是否允许空映射
+     * @param multi 是否允许多个映射
+     */
     operator fun get(keyword: String, empty: Boolean = false, multi: Boolean = true): Set<Int> {
         val indexes = LinkedHashSet<Int>()
         val ref = holder.keywords[keyword]
         if (ref != null) {
-            flatten.forEachIndexed { index, char ->
-                if (char == ref) {
-                    indexes += index
-                }
-            }
+            indexes.addAll(get(ref, empty = true, multi = true))
         }
 
         if (!empty && indexes.isEmpty()) {
-            MenuPart.SHAPE incorrect "未映射 Functional 关键词 $keyword($ref)"
+            MenuSection.SHAPE incorrect "未映射 Functional 关键词 $keyword($ref)"
         }
         if (!multi && indexes.size > 1) {
-            MenuPart.SHAPE incorrect "Functional 关键词 $keyword($ref) 映射了多个位置"
+            MenuSection.SHAPE incorrect "Functional 关键词 $keyword($ref) 映射了多个位置"
         }
         return indexes
     }
@@ -78,7 +97,12 @@ class ShapeConfiguration(val holder: MenuConfiguration) {
             if (keyword != null && keyword in ignores) {
                 return@forEachIndexed
             }
-            shaper.shape(slot, repeats.compute(char) { _, current -> (current ?: -1) + 1 }!!, template, MenuKeyword.of(keyword))
+            shaper.shape(
+                slot,
+                repeats.compute(char) { _, current -> (current ?: -1) + 1 }!!,
+                template,
+                MenuKeyword.of(keyword)
+            )
         }
     }
 
