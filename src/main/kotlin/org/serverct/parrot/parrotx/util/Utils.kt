@@ -3,7 +3,6 @@
 package org.serverct.parrot.parrotx.util
 
 import com.google.gson.JsonParser
-import taboolib.common.platform.function.console
 import taboolib.module.chat.colored
 
 val JSON_PARSER = JsonParser()

@@ -1,7 +1,8 @@
 @file:Suppress("unused")
 
-package org.serverct.parrot.parrotx.feature
+package org.serverct.parrot.parrotx.function
 
+import org.bukkit.entity.Player
 import taboolib.common.platform.function.console
 import taboolib.module.chat.colored
 
@@ -24,6 +25,12 @@ fun sendInfo(block: InfoBuilder.() -> Unit) {
     val builder = InfoBuilder()
     builder.block()
     builder.texts.forEach { sendInfo(it) }
+}
+
+fun Player.sendMultiMessage(block: InfoBuilder.() -> Unit) {
+    val builder = InfoBuilder()
+    builder.block()
+    builder.texts.forEach { sendMessage(it.colored()) }
 }
 
 interface StringReceiver {
