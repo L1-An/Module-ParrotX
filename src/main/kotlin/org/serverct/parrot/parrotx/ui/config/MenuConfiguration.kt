@@ -7,7 +7,6 @@ import org.serverct.parrot.parrotx.ui.config.advance.ShapeConfiguration
 import org.serverct.parrot.parrotx.ui.config.advance.TemplateConfiguration
 import taboolib.library.configuration.ConfigurationSection
 import taboolib.module.configuration.Configuration
-import taboolib.module.ui.type.Linked
 import taboolib.module.ui.type.PageableChest
 
 @Suppress("MemberVisibilityCanBePrivate", "unused")

@@ -52,7 +52,6 @@ fun ItemStack.areas(builder: AreaFilterBuilder.() -> Unit): ItemStack {
     return areas(AreaFilterBuilder(builder))
 }
 
-
 /**
  * 判断物品是否为 null 或是空气方块
  */

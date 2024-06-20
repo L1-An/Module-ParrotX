@@ -5,6 +5,7 @@ import org.serverct.parrot.parrotx.ui.config.MenuConfiguration
 import taboolib.module.ui.Menu
 import taboolib.module.ui.buildMenu
 import taboolib.module.ui.type.Linked
+import taboolib.module.ui.type.PageableChest
 
 @Suppress("unused")
 class Mapped<E>(override var title: String) : Menu {
@@ -41,7 +42,7 @@ class Mapped<E>(override var title: String) : Menu {
     }
 
     override fun build(): Inventory {
-        return buildMenu<Linked<E>>(title) {
+        return buildMenu<PageableChest<E>>(title) {
             val (shape, templates) = config
             val slots = shape[template].toList()
             rows(shape.rows)
