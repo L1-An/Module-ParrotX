@@ -4,11 +4,16 @@ package org.serverct.parrot.parrotx.function
 
 import org.bukkit.entity.Player
 import taboolib.common.platform.function.console
+import taboolib.common.platform.function.pluginId
 import taboolib.module.chat.colored
+
+private var infoPrefix: String = pluginId
+
+fun setInfoPrefix(prefix: String) { infoPrefix = prefix }
 
 /** 向控制台发送信息 */
 fun sendInfo(message: String) {
-    console().sendMessage(message.colored())
+    console().sendMessage("&b$infoPrefix $message".colored())
 }
 
 /**
