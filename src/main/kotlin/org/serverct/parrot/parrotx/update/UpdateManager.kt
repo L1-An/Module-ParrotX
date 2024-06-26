@@ -1,12 +1,12 @@
 package org.serverct.parrot.parrotx.update
 
 import org.bukkit.event.player.PlayerJoinEvent
+import org.serverct.parrot.parrotx.ParrotX.config
 import org.serverct.parrot.parrotx.function.sendMultiMessage
 import org.serverct.parrot.parrotx.lang.asLangOrNull
 import org.serverct.parrot.parrotx.lang.sendLang
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.pluginId
-import taboolib.module.configuration.ConfigLoader
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 object UpdateManager {
@@ -15,7 +15,6 @@ object UpdateManager {
     var latestVersion = ""
     var link = ""
 
-    val config = ConfigLoader.files["config.yml"]?.configuration
     val checkUpdate: Boolean = config?.getBoolean("update.check") ?: true
     val notifyUpdate: Boolean = config?.getBoolean("update.notify") ?: true
 

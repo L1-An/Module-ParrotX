@@ -1,12 +1,15 @@
 package org.serverct.parrot.parrotx.lang
 
 import org.bukkit.command.CommandSender
+import org.serverct.parrot.parrotx.ParrotX.config
 import taboolib.platform.util.asLangText
 import taboolib.platform.util.asLangTextList
 import taboolib.platform.util.asLangTextOrNull
 import taboolib.platform.util.sendLang
 
 object Language {
+
+    val isSoundNotify: Boolean = config?.getBoolean("sound-notify") ?: true
 
     fun sendLang(sender: CommandSender, key: String, vararg args: Any) {
         sender.sendLang(key, *args, sender.asLangTextOrNull("prefix") to "prefix")

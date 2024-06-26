@@ -4,6 +4,7 @@ package org.serverct.parrot.parrotx.lang
 import org.bukkit.Sound
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import org.serverct.parrot.parrotx.lang.Language.isSoundNotify
 import taboolib.platform.util.asLangTextOrNull
 
 /**
@@ -46,6 +47,7 @@ fun CommandSender.getLangList(node: String, vararg args: Any): List<String> {
 }
 
 private fun playSound(player: Player, type: LanguageType?) {
+    if (!isSoundNotify) return
     when (type) {
         LanguageType.Info -> player.playSound(player.location, Sound.UI_BUTTON_CLICK, 1f, (1..2).random().toFloat())
         LanguageType.Error -> player.playSound(player.location, Sound.ENTITY_VILLAGER_NO, 1f, (1..2).random().toFloat())
