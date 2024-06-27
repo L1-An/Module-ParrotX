@@ -15,8 +15,10 @@ object UpdateManager {
     var latestVersion = ""
     var link = ""
 
-    val checkUpdate: Boolean = config?.getBoolean("update.check") ?: true
-    val notifyUpdate: Boolean = config?.getBoolean("update.notify") ?: true
+    val checkUpdate: Boolean
+        get() = config?.getBoolean("update.check") ?: true
+    val notifyUpdate: Boolean
+        get() = config?.getBoolean("update.notify") ?: true
 
     @SubscribeEvent
     fun notifyUpdate(e: PlayerJoinEvent) {

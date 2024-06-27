@@ -9,7 +9,8 @@ import taboolib.platform.util.sendLang
 
 object Language {
 
-    val isSoundNotify: Boolean = config?.getBoolean("sound-notify") ?: true
+    val isSoundNotify: Boolean
+        get() = config?.getBoolean("sound-notify") ?: true
 
     fun sendLang(sender: CommandSender, key: String, vararg args: Any) {
         sender.sendLang(key, *args, sender.asLangTextOrNull("prefix") to "prefix")
